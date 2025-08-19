@@ -1,16 +1,22 @@
-import { WebSocketServer } from 'ws';
+import WebSocket, { WebSocketServer } from "ws";
 
-const wss = new WebSocketServer({ port: 8080});
+const wss = new WebSocketServer({ port: 8080 });
 
-wss.on("connection", function(socket){
-    console.log("user connnected")
+let userCount = 0;
+let allSockets: WebSocket[] = [];
 
-    socket.on("message", (e) => {
-        console.log("message received", e.toString());
-        console.log(e.toString() === "ping");
+wss.on("connection", function (socket) {
+  allSockets.push(socket);
+  userCount += 1;
+  console.log("user connnected #" + userCount);
 
-        if(e.toString() === "ping"){
-            socket.send("pong");
-        }
-    })
-})
+  socket.on("message", (message) => {
+    console.log("message received: ", message.toString());
+
+    for (const s of allSockets) {
+      if (s !== socket) {
+        s.send(message.toString() + ": sent from the server");
+      }
+    }
+  });
+});

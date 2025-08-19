@@ -8,7 +8,7 @@ function App() {
 
   function sendMessage(){
     if(!socket){
-      return;
+      return;  
     }
     const message = inputRef.current.value;
     //@ts-ignore
